@@ -12,15 +12,7 @@ from nltk.corpus import stopwords
 from copy import deepcopy
 
 
-# ## Import the data ad create the inverted index
-
-
 def import_dataset():
-    """
-    This function import all the articles in the TIME corpus,
-    returning list of lists where each sub-list contains all the
-    terms present in the document as a string.
-    """
     docs = None
     with open('dataset/doc-text.txt', 'r') as f:
         docs = f.readlines()
@@ -30,6 +22,9 @@ def import_dataset():
 
 
 def remove_stop_word(sentence):
+    '''
+        Remove stop word in a sentence
+    '''
     english_stop_words = stopwords.words('english')
     new_docs = []
     for word in sentence:
@@ -40,6 +35,9 @@ def remove_stop_word(sentence):
 
 
 def remove_stop_words(docs):
+    '''
+        Remove stop word in many sentences
+    '''
     english_stop_words = stopwords.words('english')
     new_docs = []
     for doc in docs:
@@ -49,6 +47,9 @@ def remove_stop_words(docs):
 
 
 def docs_processing(docs):
+    '''
+        Process and split sentences by ' '
+    '''
     docs_after_process = []
     # removing digit and break line ('\n)
     st1_pr_docs = list(filter(lambda y: not y.isdigit(),
@@ -80,25 +81,6 @@ def make_inverted_index(corpus):
         for term in article:
             index[term].add(docid + 1)
     return index
-
-# def create_reverted_index(processed_docs):
-#     reverted_index = reduce(lambda acc, word: {**acc, word: []}, list(
-#         set([word for word in (' '.join(processed_docs)).split() if word.strip()])), {})
-
-#     for i, doc in enumerate(processed_docs):
-#         for word in list(set([word for word in doc.split() if doc.strip()])):
-#             reverted_index[word].append(i + 1)
-
-#     for key in reverted_index:
-#         reverted_index[key] = list(set(reverted_index[key]))
-#         reverted_index[key].sort()
-
-#     list_tmp = list(reverted_index.items())
-#     list_tmp.sort(key=lambda x: x[0])
-
-#     reverted_index = dict(list_tmp)
-#     return reverted_index
-
 
 # ### Union of two posting lists
 
@@ -162,7 +144,6 @@ def RSV_weights(corpus, index):
 
 
 # ## BIM Class
-
 
 class BIM():
     '''
@@ -270,25 +251,6 @@ class BIM():
 
         self.weights = RSV_weights(self.articles, self.index)
 
-    def relevance_feedback(self, *args):
-        '''
-        Function that implements relevance feedback for the last query formulated.
-        The set of relevant documents is given by the user through a set of indexes
-        '''
-        if (self.query_text == ''):
-            print('Cannot get feedback before a query is formulated.')
-            return
-
-        relevant_idx = list(args)
-
-        if (isinstance(relevant_idx[0], list)):
-            relevant_idx = relevant_idx[0]
-
-        query = self.query_text.upper().split()
-        self.recompute_weights(relevant_idx, query)
-
-        self.answer_query(self.query_text)
-
     def read_document(self, rank_num):
         '''
         Function that allows the user to select a document among the ones returned 
@@ -326,8 +288,6 @@ class BIM():
 articles = docs_processing(import_dataset())
 bim = BIM(articles)
 query = 'MEASUREMENT OF DIELECTRIC CONSTANT OF LIQUIDS BY THE USE OF MICROWAVE TECHNIQUES'
-# query = remove_stop_words(query.split(' '))
 bim.answer_query(query)
-# # bim.relevance_feedback(5, 6, 8)
-# # bim.show_more()
+bim.show_more()
 # # bim.read_document(2)
